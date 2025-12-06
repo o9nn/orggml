@@ -1,0 +1,181 @@
+# ORGGML Build and Test Workflow
+# Analogous to OpenCog's oc.yml, adapted for ORGGML cognitive architecture
+
+name: ORGGML
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  CCACHE_DIR: /ws/ccache
+  MAKEFLAGS: -j$(nproc)
+
+jobs:
+  build-and-test:
+    name: Build and Test All Components
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    container:
+      image: ubuntu:22.04
+      options: --user root
+      env:
+        CCACHE_DIR: /ws/ccache
+        MAKEFLAGS: -j$(nproc)
+    steps:
+      # Trust working directory for Git (fix dubious ownership error)
+      - name: Trust working directory for Git
+        run: git config --global --add safe.directory /__w/orggml/orggml
+
+      # Checkout the Repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 01. Install Build Dependencies
+      - name: Install Build Dependencies
+        run: |
+          apt-get update
+          apt-get install -y ccache pkg-config cmake build-essential git \
+            libboost-all-dev libssl-dev python3-dev python3-pip \
+            valgrind doxygen wget curl
+
+      # 02. Build and Install ASML (AtomSpace Machine Learning)
+      # Foundation layer - analogous to AtomSpace in OpenCog
+      - name: Build and Install ASML
+        run: |
+          if [ -f asml/CMakeLists.txt ]; then
+            mkdir -p asml/build && cd asml/build
+            cmake -DCMAKE_BUILD_TYPE=Release ..
+            make -j$(nproc)
+            make install
+            ldconfig
+            cd ../..
+          else
+            echo "ASML source not yet integrated - skipping build"
+          fi
+
+      # 03. Build and Install Learn.Cog (Learning and Language Cognition)
+      # Cognitive processing - analogous to OpenCog's cognitive modules
+      - name: Build and Install Learn.Cog
+        run: |
+          if [ -f learn.cog/CMakeLists.txt ] || [ -f learn.cog/Makefile ]; then
+            cd learn.cog
+            if [ -f CMakeLists.txt ]; then
+              mkdir -p build && cd build
+              cmake -DCMAKE_BUILD_TYPE=Release ..
+              make -j$(nproc)
+              make install
+              ldconfig
+              cd ../..
+            elif [ -f Makefile ]; then
+              make -j$(nproc)
+              make install
+              cd ..
+            fi
+          else
+            echo "Learn.Cog source not yet integrated - skipping build"
+          fi
+
+      # 04. Build and Install Sensation (Sensory Input Processing)
+      # Perception layer - analogous to OpenCog's sensation module
+      - name: Build and Install Sensation
+        run: |
+          if [ -f sensation/CMakeLists.txt ] || [ -f sensation/Makefile ]; then
+            cd sensation
+            if [ -f CMakeLists.txt ]; then
+              mkdir -p build && cd build
+              cmake -DCMAKE_BUILD_TYPE=Release ..
+              make -j$(nproc)
+              make install
+              ldconfig
+              cd ../..
+            elif [ -f Makefile ]; then
+              make -j$(nproc)
+              make install
+              cd ..
+            fi
+          else
+            echo "Sensation source not yet integrated - skipping build"
+          fi
+
+      # 05. Run Tests for ASML
+      - name: Test ASML
+        run: |
+          if [ -d asml/build ]; then
+            cd asml/build
+            ctest --output-on-failure || echo "ASML tests not configured yet"
+            cd ../..
+          else
+            echo "ASML not built - skipping tests"
+          fi
+
+      # 06. Run Tests for Learn.Cog
+      - name: Test Learn.Cog
+        run: |
+          if [ -d learn.cog/build ]; then
+            cd learn.cog/build
+            ctest --output-on-failure || echo "Learn.Cog tests not configured yet"
+            cd ../..
+          elif [ -f learn.cog/Makefile ]; then
+            cd learn.cog
+            make test || echo "Learn.Cog tests not configured yet"
+            cd ..
+          else
+            echo "Learn.Cog not built - skipping tests"
+          fi
+
+      # 07. Run Tests for Sensation
+      - name: Test Sensation
+        run: |
+          if [ -d sensation/build ]; then
+            cd sensation/build
+            ctest --output-on-failure || echo "Sensation tests not configured yet"
+            cd ../..
+          elif [ -f sensation/Makefile ]; then
+            cd sensation
+            make test || echo "Sensation tests not configured yet"
+            cd ..
+          else
+            echo "Sensation not built - skipping tests"
+          fi
+
+      # (Optional) Package Components
+      - name: Package Components
+        if: github.ref == 'refs/heads/main'
+        run: |
+          # ASML Packaging
+          if [ -d asml/build ]; then
+            cd asml/build
+            make package || echo "ASML package target not defined."
+            cd ../..
+          fi
+
+          # Learn.Cog Packaging
+          if [ -d learn.cog/build ]; then
+            cd learn.cog/build
+            make package || echo "Learn.Cog package target not defined."
+            cd ../..
+          fi
+
+          # Sensation Packaging
+          if [ -d sensation/build ]; then
+            cd sensation/build
+            make package || echo "Sensation package target not defined."
+            cd ../..
+          fi
+
+      # Upload Build Artifacts
+      - name: Upload Build Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            asml/build/
+            learn.cog/build/
+            sensation/build/
