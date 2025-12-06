@@ -19,6 +19,8 @@ jobs:
   build-and-test:
     name: Build and Test All Components
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     container:
       image: ubuntu:22.04
       options: --user root
