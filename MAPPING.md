@@ -21,6 +21,11 @@ This document provides a complete mapping of repositories from the ggml-org GitH
 | [ggml-org.github.io](https://github.com/ggml-org/ggml-org.github.io) | `docs/website/` | Documentation | 📋 Planned |
 | [media](https://github.com/ggml-org/media) | `docs/media/` | Documentation | 📋 Planned |
 
+## Enriched Component Mappings
+
+For detailed mappings to OpenCog cognitive architecture components and component groupings, see:
+- **[OpenCog Component Mapping](./docs/OPENCOG_COMPONENT_MAPPING.md)** - Comprehensive mapping of ORGGML component groups to OpenCog subsystems
+
 ## Directory Structure
 
 ```
