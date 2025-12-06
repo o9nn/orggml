@@ -569,17 +569,19 @@ orggml_memory_add_to_working(memory, perception_event);
 
 ```c
 // orggml-planning: Define goal
-struct orggml_goal *goal = orggml_goal_create(
-    "Respond_to_user_query",
-    priority = 0.9
-);
+struct orggml_goal_params goal_params = {
+    .description = "Respond_to_user_query",
+    .priority = 0.9
+};
+struct orggml_goal *goal = orggml_goal_create(&goal_params);
 
 // orggml-knowledge: Query relevant knowledge
-struct asml_query_result *context = asml_retrieve_context(
-    knowledge_base,
-    goal->description,
-    max_tokens = 2048
-);
+struct asml_query_params query_params = {
+    .knowledge_base = knowledge_base,
+    .query = goal->description,
+    .max_tokens = 2048
+};
+struct asml_query_result *context = asml_retrieve_context(&query_params);
 
 // orggml-learning: Use learned model for plan generation
 struct learncog_plan *plan = learncog_generate_plan(
@@ -597,12 +599,13 @@ orggml_execute_plan(plan, &execution_context);
 
 ```c
 // orggml-communication: Agent 1 sends message
-struct orggml_message *msg = orggml_message_create(
-    sender = "Agent_0",
-    receiver = "Agent_1",
-    content = "Query: What is the current task status?",
-    protocol = ORGGML_PROTOCOL_INFORM
-);
+struct orggml_message_params msg_params = {
+    .sender = "Agent_0",
+    .receiver = "Agent_1",
+    .content = "Query: What is the current task status?",
+    .protocol = ORGGML_PROTOCOL_INFORM
+};
+struct orggml_message *msg = orggml_message_create(&msg_params);
 
 orggml_send_message(msg);
 
