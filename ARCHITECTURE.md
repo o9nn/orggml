@@ -27,6 +27,22 @@ ORGGML adapts these principles by mapping ggml-org projects to equivalent cognit
 | `ci/` | [ci](https://github.com/ggml-org/ci) | **Infrastructure** | Continuous integration and testing |
 | `tools/` | Editor plugins & utilities | **Development Tools** | Developer integrations and utilities |
 
+### Enriched Component Architecture
+
+ORGGML organizes components into eight cognitive functional groups that map to OpenCog subsystems. For detailed documentation of these mappings, see:
+
+**[OpenCog Component Mapping](./docs/OPENCOG_COMPONENT_MAPPING.md)**
+
+The eight component groups are:
+1. **orggml-core** - Main orchestration engine (cogutil, atomspace, cogserver)
+2. **orggml-perception** - Multi-modal sensory processing (sensory, vision, perception)
+3. **orggml-knowledge** - Knowledge representation & reasoning (atomspace, pln, ure, miner)
+4. **orggml-planning** - Hierarchical planning & goals (spacetime, cogserver)
+5. **orggml-learning** - Continuous learning & adaptation (moses, asmoses, learn)
+6. **orggml-communication** - NLP & multi-agent communication (lg-atomese, opencog)
+7. **orggml-memory** - Memory & context management (atomspace-rocks, attention)
+8. **orggml-tools** - External tool integration (external-tools, ros-behavior-scripting)
+
 ### Detailed Mapping
 
 #### ASML (AtomSpace Machine Learning)

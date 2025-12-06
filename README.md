@@ -24,6 +24,7 @@ ORGGML maps machine learning inference tools to cognitive system components:
 
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Detailed architectural overview and OpenCog mapping
 - **[MAPPING.md](./MAPPING.md)** - Complete repository mapping from ggml-org to ORGGML
+- **[OpenCog Component Mapping](./docs/OPENCOG_COMPONENT_MAPPING.md)** - Enriched mappings of ORGGML component groups to OpenCog subsystems
 
 ### Component Documentation
 - [ASML (AtomSpace-ML)](./asml/README.md) - Tensor operations and knowledge representation
