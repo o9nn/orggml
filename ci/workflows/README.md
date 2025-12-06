@@ -166,7 +166,7 @@ When adding new cognitive modules:
 
 ## References
 
-- OpenCog CI: https://github.com/opencog/pycog0/.github/workflows/oc.yml
+- OpenCog CI: https://github.com/opencog (reference workflow architecture)
 - ggml-org CI: https://github.com/ggml-org/ci
 - ORGGML Architecture: [../../ARCHITECTURE.md](../../ARCHITECTURE.md)
 - Component Mapping: [../../MAPPING.md](../../MAPPING.md)
